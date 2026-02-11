@@ -208,3 +208,6 @@ __marimo__/
 
 # Jupyter Pickle files
 artifacts/
+
+# Frontend
+frontend/node_modules/
