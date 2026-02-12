@@ -45,13 +45,9 @@ app.add_middleware(
 # Load Models on Startup
 try:
     # Role Classifier
-    # This model predicts which job role best fits a resume
-    # Example: Given a resume, it predicts "Data Scientist" or "Software Engineer"
     role_classifier = joblib.load('../artifacts/role_classifier.pkl')
     
     # MODEL 2: Role-Specific Suitability Models
-    # This is a dictionary containing one model for each role
-    # Each model predicts SELECT or REJECT for its specific role
     role_specific_models = joblib.load('../artifacts/role_specific_models.pkl')
     
     # FEATURE TRANSFORMERS: Convert structured data to numbers
@@ -111,8 +107,6 @@ async def predict_resume(
         candidate_info = extract_resume_info(resume_text)
         
         # Step 4: Convert structured data to features (same as training)
-        # The models expect: [1 experience | 1 education | N skills] features
-        
         # Experience Years (normalized)
         experience_years = np.array([[candidate_info['experience_years']]])
         X_experience = experience_scaler.transform(experience_years)
@@ -150,7 +144,6 @@ async def predict_resume(
         role_confidence = float(role_probabilities[role_idx])
         
         # Step 6: Use role-specific model to decide SELECT or REJECT
-        # Use the role-specific model to predict SELECT or REJECT
         role_model = role_specific_models[recommended_role]
         suitability_prediction = role_model.predict(resume_vectorized)[0]
         suitability_proba = role_model.predict_proba(resume_vectorized)[0]
