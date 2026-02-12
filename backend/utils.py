@@ -11,7 +11,7 @@ from fastapi import HTTPException
 
 def get_email(text):
     """Extract email address from resume text."""
-    email = re.findall(r'\S+@\S+', str(text))
+    email = re.findall(r'\b[\w.+-]+@[\w.-]+\.\w+', str(text))
     return email[0] if email else "Not Found"
 
 
@@ -26,7 +26,11 @@ def get_name(text):
     lines = str(text).split('\n')
     for line in lines:
         if line.strip():
-            return line.strip()
+            # Convert to title case for proper formatting
+            name = line.strip().title()
+            # Add space before capital letters if missing
+            name = re.sub(r'([a-z])([A-Z])', r'\1 \2', name)
+            return name
     return "Not Found"
 
 
@@ -34,14 +38,20 @@ def get_education(text):
     """Extract education information from resume text."""
     degrees = ['bachelor', 'master', 'phd', 'diploma', 'degree', 'bsc', 'msc', 'ba', 'ma', 'b.sc', 'm.sc']
     text_lower = str(text).lower()
+    original_text = str(text)
     education_info = []
     
     for degree in degrees:
         if degree in text_lower:
-            sentences = re.split(r'[.\n]', text_lower)
-            for sentence in sentences:
+            # Split both original and lowercase for matching
+            sentences_lower = re.split(r'[.\n]', text_lower)
+            sentences_original = re.split(r'[.\n]', original_text)
+            
+            for i, sentence in enumerate(sentences_lower):
                 if degree in sentence and len(sentence) < 200:
-                    education_info.append(sentence.strip())
+                    # Get the original case version and apply title case
+                    edu = sentences_original[i].strip().title()
+                    education_info.append(edu)
                     break
             break
     

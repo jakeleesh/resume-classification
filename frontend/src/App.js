@@ -273,7 +273,6 @@ function App() {
 
       <Box sx={{ textAlign: 'center', mt: 4 }}>
         <Typography variant="body2" color="text.secondary">
-          Powered by AI
         </Typography>
       </Box>
     </Container>
